@@ -2,6 +2,7 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources;
 
+use App\Models\User;
 use Illuminate\Support\Str;
 use TomatoPHP\FilamentIcons\Components\IconPicker;
 use TomatoPHP\FilamentMediaManager\Resources\FolderResource\Pages;
@@ -111,20 +112,11 @@ class FolderResource extends Resource
     {
         return $table
             ->modifyQueryUsing(function (Builder $query) {
-                if(request()->has('model_type') && !request()->has('collection')){
-                    $query->where('model_type', request()->get('model_type'))
-                        ->where('model_id', null)
-                        ->whereNotNull('collection');
-                }
-                else if(request()->has('model_type') && request()->has('collection')){
-                    $query->where('model_type', request()->get('model_type'))
-                        ->whereNotNull('model_id')
-                        ->where('collection', request()->get('collection'));
-                }
-                else {
-                    $query->where('model_id', null)
-                        ->where('collection', null)->orWhere('model_type', null);
-                }
+                $userId = auth()->user()?->id ?? 0;
+                $clientId = User::getActiveClient()?->id ?? 0;
+
+                $query->where('user_id', $userId)
+                    ->where('client_id', $clientId);
             })
             ->content(function () {
                 return view('filament-media-manager::pages.folders');

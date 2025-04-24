@@ -2,6 +2,7 @@
 
 namespace TomatoPHP\FilamentMediaManager\Resources;
 
+use App\Models\User;
 use Filament\Facades\Filament;
 use TomatoPHP\FilamentMediaManager\Models\Folder;
 use TomatoPHP\FilamentMediaManager\Resources\MediaResource\Pages;
@@ -60,6 +61,12 @@ class MediaResource extends Resource
                     if($folder){
                         $query->where('collection_name', $folder->collection);
                     }
+
+                    $userId = auth()->user()?->id ?? 0;
+                    $clientId = User::getActiveClient()?->id ?? 0;
+
+                    $query->where('user_id', $userId)
+                        ->where('client_id', $clientId);
                 }
             })
             ->emptyState(fn()=>view('filament-media-manager::pages.media'))

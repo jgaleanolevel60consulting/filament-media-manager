@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Client;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +17,9 @@ return new class extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignIdFor(Client::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
 
             //Morph
             $table->string('model_type')->nullable();
@@ -34,6 +39,8 @@ return new class extends Migration
             $table->boolean('is_favorite')->default(false)->nullable();
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 
